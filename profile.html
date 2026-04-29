@@ -2,94 +2,38 @@
 <html lang="th">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>My Profile</title>
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <title>Safety Leaderboard | TTSBKK</title>
   <style>
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eef2f7; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-    .card { background: white; width: 320px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; overflow: hidden; }
-    .header { background: #0056b3; color: white; padding: 30px 10px; }
-    .header h3 { margin: 0; }
-    .score-box { width: 100px; height: 100px; background: white; border-radius: 50%; margin: -50px auto 20px; display: flex; flex-direction: column; justify-content: center; border: 4px solid #0056b3; box-shadow: 0 4px 10px rgba(0,0,0,0.1); background-color: white; }
-    .score { font-size: 28px; font-weight: bold; color: #0056b3; }
-    .info { padding: 0 20px 20px; text-align: left; }
-    .item { margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
-    .label { font-size: 12px; color: #888; }
-    .val { font-weight: bold; color: #333; font-size: 14px; }
-    #loader { color: #0056b3; font-weight: bold; }
+    body { font-family: 'Prompt', sans-serif; background: #f8f9fc; padding: 30px; }
+    .header { background: #00429d; color: white; padding: 20px; border-radius: 15px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
+    table { width: 100%; background: white; border-radius: 15px; border-collapse: collapse; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    th, td { padding: 15px 30px; text-align: left; border-bottom: 1px solid #eee; }
+    th { background: #fdfdfd; color: #888; font-size: 12px; text-transform: uppercase; }
+    .score { font-weight: bold; color: #00429d; background: #eef4ff; padding: 5px 12px; border-radius: 20px; }
+    .avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-right: 10px; }
   </style>
 </head>
 <body>
-
-  <div id="loader">กำลังโหลดข้อมูลคะแนน...</div>
-
-  <div class="card" id="main" style="display:none;">
-    <div class="header"><h3>My Safety Coins</h3></div>
-    <div class="score-box">
-      <div class="score" id="score">0</div>
-      <div style="font-size: 10px; color: #666;">Coins</div>
-    </div>
-    <div class="info">
-      <div class="item"><div class="label">ชื่อ-นามสกุล</div><div class="val" id="name">-</div></div>
-      <div class="item"><div class="label">รหัสพนักงาน</div><div class="val" id="empId">-</div></div>
-      <div class="item"><div class="label">หน่วยงาน</div><div class="val" id="dept">-</div></div>
-    </div>
+  <div class="header">
+    <div><h1>SAFETY LEADERBOARD</h1><p>TTSBKK E&I Section Dashboard</p></div>
+    <button onclick="loadData()">🔄 Refresh</button>
   </div>
-
+  <table id="table">
+    <thead><tr><th>อันดับ</th><th>พนักงาน</th><th>รหัส</th><th>คะแนนสะสม</th></tr></thead>
+    <tbody id="tbody"></tbody>
+  </table>
   <script>
-    // 🛑 1. ใส่ URL ของ Web App (อันเดียวกับหน้าลงทะเบียน)
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbzfhggUUvJcs2Qv7xrCnAuQHz3tKWAs794lZHSLYQcx74_veW3iGGUeHjKJvYDiB7uP/exec";
-
-    async function init() {
-      // 🛑 2. ใส่ LIFF ID ของหน้า Profile
-      await liff.init({ liffId: "ใส่_LIFF_ID_หน้า_PROFILE_ที่นี่" });
-      
-      if (!liff.isLoggedIn()) {
-        liff.login();
-        return;
-      }
-      
-      const profile = await liff.getProfile();
-      loadProfileData(profile.userId);
+    const URL = "https://script.google.com/macros/s/AKfycbx2pOIyXuzvSzXsZt2thlGCYdl6WCkSlEm5Mjd1p1JzPsPUPoNLltY2USe4DYqYQqFZ5g/exec";
+    async function loadData() {
+      const res = await fetch(URL, { method: 'POST', body: JSON.stringify({ action: 'getAllUsers' }) });
+      const r = await res.json();
+      const body = document.getElementById('tbody');
+      body.innerHTML = "";
+      r.data.forEach((u, i) => {
+        body.innerHTML += `<tr><td>${i+1}</td><td><img class="avatar" src="${u.photo || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}">${u.name}</td><td>${u.empId}</td><td><span class="score">${u.score} Coins</span></td></tr>`;
+      });
     }
-
-    async function loadProfileData(userId) {
-      const payload = { action: 'getProfile', userId: userId };
-      
-      try {
-        // 🟢 แก้ไขตรงนี้: เพิ่ม Headers และ Redirect แบบเดียวกับหน้า Index
-        const response = await fetch(GAS_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'text/plain;charset=utf-8',
-          },
-          body: JSON.stringify(payload),
-          redirect: 'follow'
-        });
-        
-        const result = await response.json();
-        
-        if (result.status === 'success') {
-          // นำข้อมูลมาแสดงบนหน้าจอ
-          document.getElementById('name').innerText = result.data.name;
-          document.getElementById('empId').innerText = result.data.empId;
-          document.getElementById('dept').innerText = result.data.dept;
-          document.getElementById('score').innerText = result.data.score;
-          
-          // ซ่อนข้อความโหลด และแสดง Card
-          document.getElementById('loader').style.display = 'none';
-          document.getElementById('main').style.display = 'block';
-        } else {
-          alert("ไม่พบข้อมูลสมาชิกของ TTSBKK กรุณาลงทะเบียนก่อนครับ");
-          liff.closeWindow();
-        }
-      } catch (err) {
-        console.error("Fetch Error:", err);
-        alert("เกิดข้อผิดพลาดในการโหลดข้อมูล โปรดตรวจสอบการเชื่อมต่อ");
-      }
-    }
-
-    window.onload = init;
+    window.onload = loadData;
   </script>
 </body>
 </html>
