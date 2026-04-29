@@ -29,17 +29,19 @@
   </div>
 
   <script>
-    // 🛑 1. ใส่ URL ของ Web App จาก Google Apps Script (ลงท้ายด้วย /exec)
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbz6PBJqVbULFjP_v5I0tQqHkxYQnkpba8Ssuqer94PSP1-oF6GiTo0OzEpLTIzIB9IyjA/exec";
+    // 🛑 1. URL ของ Web App จาก Google Apps Script
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzOtmPA4KYEWMNpXpNru9Iz14ML99Tfpxs3zNo1i5bdrDhxVPYFXV-EwqfHwxat-QFOsQ/exec";
     let userId = "";
 
     async function init() {
-      // 🛑 2. ใส่ LIFF ID หน้าลงทะเบียน
+      // 🛑 2. LIFF ID หน้าลงทะเบียน
       await liff.init({ liffId: "2009930455-BQ1aMLq6" });
+      
       if (!liff.isLoggedIn()) {
         liff.login();
         return;
       }
+      
       const profile = await liff.getProfile();
       userId = profile.userId;
     }
@@ -49,33 +51,59 @@
       const name = document.getElementById('name').value;
       const dept = document.getElementById('department').value;
 
-      if (!empId || !name) return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+      // ตรวจสอบการกรอกข้อมูล
+      if (!empId || !name) {
+        return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+      }
 
+      // ปิดปุ่มชั่วคราวระหว่างรอเซิร์ฟเวอร์
       document.getElementById('btn').disabled = true;
       document.getElementById('btn').innerText = "กำลังบันทึกข้อมูล...";
 
-      const payload = { action: 'register', userId: userId, empId: empId, name: name, dept: dept };
+      // เตรียมข้อมูลส่งไปที่ Google Sheet
+      const payload = { 
+        action: 'register', 
+        userId: userId, 
+        empId: empId, 
+        name: name, 
+        dept: dept 
+      };
 
       try {
+        // ส่งข้อมูลด้วย fetch API พร้อมตั้งค่าทะลุ CORS
         const response = await fetch(GAS_URL, {
           method: 'POST',
-          body: JSON.stringify(payload)
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8', 
+          },
+          body: JSON.stringify(payload),
+          redirect: 'follow'
         });
+        
         const result = await response.json();
         
+        // ตรวจสอบผลลัพธ์จาก Google Script
         if (result.status === 'success') {
           alert(result.message);
-          liff.closeWindow();
+          liff.closeWindow(); // ปิดหน้าจอ LIFF เมื่อสำเร็จ
         } else {
           alert("เกิดข้อผิดพลาด: " + result.message);
-          document.getElementById('btn').disabled = false;
+          resetButton();
         }
       } catch (err) {
-        alert("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้");
-        document.getElementById('btn').disabled = false;
+        console.error("Fetch Error:", err);
+        alert("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ โปรดตรวจสอบการตั้งค่า Deploy ของ GAS");
+        resetButton();
       }
     }
 
+    // ฟังก์ชันสำหรับเปิดปุ่มกลับมาให้กดใหม่ได้กรณี Error
+    function resetButton() {
+      document.getElementById('btn').disabled = false;
+      document.getElementById('btn').innerText = "บันทึกข้อมูล";
+    }
+
+    // เริ่มการทำงานเมื่อโหลดหน้าเว็บเสร็จ
     window.onload = init;
   </script>
 </body>
