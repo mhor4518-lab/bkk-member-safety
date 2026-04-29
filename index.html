@@ -1,152 +1,204 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TTSBKK Staff Identity</title>
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        :root { --primary: #00429d; --gold: #f1c40f; --bg: #f4f7f6; }
-        body { font-family: 'Prompt', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
-        .id-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-width: 380px; margin: auto; }
-        .header { background: var(--primary); padding: 50px 20px 70px; text-align: center; color: white; }
-        .header h2 { margin: 0; font-size: 20px; letter-spacing: 1px; }
-        .header p { margin: 5px 0 0; font-size: 10px; opacity: 0.8; }
-        
-        .profile-area { position: relative; width: 120px; height: 120px; margin: -60px auto 10px; }
-        .img-box { width: 100%; height: 100%; border-radius: 50%; border: 5px solid white; background: #eee; overflow: hidden; cursor: pointer; }
-        .img-box img { width: 100%; height: 100%; object-fit: cover; }
-        .cam-icon { position: absolute; bottom: 5px; right: 5px; background: var(--gold); border-radius: 50%; width: 30px; height: 30px; border: 2px solid white; display: flex; align-items: center; justify-content: center; font-size: 14px; }
-        
-        .user-info { text-align: center; padding-bottom: 20px; }
-        .user-info h3 { margin: 10px 0 5px; font-size: 22px; color: #333; }
-        .user-info span { background: #eef2f7; padding: 4px 15px; border-radius: 15px; font-size: 13px; color: #666; }
-        
-        .stats { display: flex; border-top: 1px solid #eee; }
-        .stat-item { flex: 1; padding: 15px; text-align: center; border-right: 1px solid #eee; }
-        .stat-item:last-child { border-right: none; }
-        .stat-label { font-size: 10px; color: #aaa; display: block; }
-        .stat-val { font-size: 18px; font-weight: bold; color: var(--primary); }
-        
-        .history { max-width: 380px; margin: 20px auto; }
-        .h-item { background: white; padding: 12px; border-radius: 12px; margin-bottom: 10px; display: flex; font-size: 13px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
-        .h-date { color: #ccc; border-right: 1px solid #eee; padding-right: 10px; margin-right: 10px; }
-        .h-detail { flex: 1; }
-        .badge { font-size: 10px; padding: 2px 8px; border-radius: 5px; margin-left: 5px; }
-        .pass { background: #d4edda; color: #155724; }
-        .fail { background: #f8d7da; color: #721c24; }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Staff Identity - TTSBKK</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root { --primary: #0056b3; --gold: #f39c12; --bg: #f0f2f5; }
+    body { font-family: 'Prompt', sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; justify-content: center; }
+    .container { width: 100%; max-width: 400px; }
+    
+    /* ID Card Design */
+    .id-card { background: white; border-radius: 25px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.1); position: relative; }
+    
+    /* 🔵 ขยายแถบสีน้ำเงินให้ใหญ่ขึ้น (Full Header) */
+    .card-header { 
+      background: var(--primary); 
+      color: white; 
+      padding: 50px 20px 80px 20px; 
+      text-align: center; 
+    }
+    .card-header .brand { font-size: 11px; opacity: 0.8; letter-spacing: 1px; margin-bottom: 5px; }
+    .card-header .title { font-weight: 600; font-size: 20px; letter-spacing: 0.5px; }
+
+    /* 📸 รูปโปรไฟล์ - คลิกเพื่อเปลี่ยนรูป */
+    .profile-img-wrapper {
+      position: relative;
+      width: 110px;
+      height: 110px;
+      margin: -55px auto 10px;
+      z-index: 5;
+    }
+    .profile-img { 
+      width: 100%; height: 100%;
+      background: #fff; 
+      border-radius: 50%; 
+      border: 6px solid white; 
+      display: flex; align-items: center; justify-content: center; 
+      overflow: hidden; 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      cursor: pointer;
+    }
+    .profile-img img { width: 100%; height: 100%; object-fit: cover; }
+    .edit-badge {
+      position: absolute; bottom: 5px; right: 5px;
+      background: var(--gold); color: white; width: 25px; height: 25px;
+      border-radius: 50%; border: 2px solid white; font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .user-name { font-size: 22px; font-weight: 600; text-align: center; margin: 15px 0 5px; color: #333; }
+    .user-dept { text-align: center; font-size: 13px; color: #666; background: #f0f2f5; width: fit-content; margin: 0 auto 25px; padding: 5px 20px; border-radius: 20px; }
+    
+    .stats { display: flex; border-top: 1px solid #f0f2f5; }
+    .stat-box { flex: 1; padding: 20px; text-align: center; border-right: 1px solid #f0f2f5; }
+    .stat-box:last-child { border-right: none; }
+    .stat-label { font-size: 11px; color: #999; text-transform: uppercase; margin-bottom: 5px; display: block; }
+    .stat-val { font-size: 20px; font-weight: bold; color: var(--primary); }
+
+    /* ประวัติ */
+    .h-title { margin: 25px 0 15px; font-size: 16px; color: #444; font-weight: 600; }
+    .q-item { background: white; border-radius: 15px; padding: 15px; margin-bottom: 10px; display: flex; align-items: flex-start; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .q-date { font-size: 11px; color: #bbb; padding-right: 15px; border-right: 1px solid #f0f2f5; margin-right: 15px; min-width: 40px; text-align: center; padding-top: 5px; }
+    .q-info { flex: 1; }
+    .q-reason { font-size: 13px; color: #555; line-height: 1.4; margin-bottom: 5px; }
+    .q-score { font-size: 12px; font-weight: bold; color: var(--gold); }
+    .badge { font-size: 9px; padding: 2px 8px; border-radius: 8px; margin-left: 5px; }
+    .pass { background: #e6ffed; color: #28a745; }
+    .fail { background: #ffeef0; color: #dc3545; }
+    
+    .btn-close { width: 100%; margin-top: 15px; padding: 12px; border: none; border-radius: 12px; background: #ddd; color: #333; font-weight: 600; cursor: pointer; }
+    #upload-status { font-size: 10px; color: var(--gold); text-align: center; display: none; margin-top: -5px; }
+  </style>
 </head>
 <body>
 
-<div id="app">
-    <div id="loader" style="text-align:center; padding: 50px;">⏳ กำลังโหลด...</div>
+<div class="container">
+  <div id="loader" style="text-align: center; margin-top: 50px;">⏳ กำลังโหลด...</div>
 
-    <div id="main-content" style="display:none;">
-        <div class="id-card">
-            <div class="header">
-                <h2>STAFF IDENTITY CARD</h2>
-                <p>PAPERLESS 2028 | TTSBKK E&I SECTION</p>
-            </div>
-            
-            <div class="profile-area" onclick="document.getElementById('fileIn').click()">
-                <div class="img-box">
-                    <img id="u-photo" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
-                </div>
-                <div class="cam-icon">📷</div>
-            </div>
-            <input type="file" id="fileIn" style="display:none" accept="image/*" onchange="uploadImage(this)">
-
-            <div class="user-info">
-                <h3 id="u-name">-</h3>
-                <span id="u-dept">-</span>
-            </div>
-            
-            <div class="stats">
-                <div class="stat-item"><span class="stat-label">STAFF ID</span><span class="stat-val" id="u-id">-</span></div>
-                <div class="stat-item"><span class="stat-label">TOTAL COINS</span><span class="stat-val" id="u-score" style="color:var(--gold)">0</span></div>
-            </div>
+  <div id="profile-section" style="display:none;">
+    <div class="id-card">
+      <div class="card-header">
+        <div class="brand">PAPERLESS 2028 | TTSBKK</div>
+        <div class="title">STAFF IDENTITY CARD</div>
+      </div>
+      
+      <div class="profile-img-wrapper" onclick="document.getElementById('fileInput').click()">
+        <div class="profile-img">
+          <img id="user-photo" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
         </div>
+        <div class="edit-badge">📷</div>
+      </div>
+      <div id="upload-status">กำลังอัปโหลดรูป...</div>
+      <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFileUpload(this)">
 
-        <div class="history">
-            <p style="font-weight: 600; color: #555;">📊 ประวัติภารกิจ</p>
-            <div id="history-list"></div>
-        </div>
-        <button onclick="liff.closeWindow()" style="width:100%; padding:15px; border:none; background:#ccc; border-radius:10px; font-weight:600;">ปิดหน้าต่าง</button>
+      <div class="user-name" id="disp-name">-</div>
+      <div class="user-dept" id="disp-dept">-</div>
+      
+      <div class="stats">
+        <div class="stat-box"><span class="stat-label">ID CARD</span><span class="stat-val" id="disp-empId">-</span></div>
+        <div class="stat-box"><span class="stat-label">COINS</span><span class="stat-val" id="disp-score" style="color: var(--gold);">0</span></div>
+      </div>
     </div>
+
+    <div class="h-title">📊 ประวัติภารกิจล่าสุด</div>
+    <div id="history-list"></div>
+    <button class="btn-close" onclick="liff.closeWindow()">ปิดหน้าต่าง</button>
+  </div>
+
+  <div id="register-section" style="display:none; background:white; padding:30px; border-radius:25px; text-align:center;">
+    <h3>📝 ลงทะเบียนพนักงาน</h3>
+    <input type="text" id="reg-empId" placeholder="รหัสพนักงาน" style="width:100%; padding:12px; margin-bottom:12px; border:1px solid #ddd; border-radius:10px;">
+    <input type="text" id="reg-name" placeholder="ชื่อ-นามสกุล" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:10px;">
+    <button onclick="submitForm()" style="width:100%; padding:12px; background:var(--primary); color:white; border:none; border-radius:10px; font-weight: bold;">ลงทะเบียน</button>
+  </div>
 </div>
 
 <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbzGmlyNMgaW9ZoVsCe620CmDi7b1dH8G1C9BOWx8-1LQV0Tx6siNxU6m2dqRqqHhf4s9Q/exec";
-    let userId = "";
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbxHltOGf76CUfPacHIrWipFBgz9AyHkLqVC-vj-7Wth6Eu0VCtb9DIYN_wircXYO5_MCQ/exec";
+  let uId = "";
 
-    async function init() {
-        await liff.init({ liffId: "YOUR_LIFF_ID" });
-        if (!liff.isLoggedIn()) { liff.login(); return; }
-        const profile = await liff.getProfile();
-        userId = profile.userId;
-        loadData();
+  async function init() {
+    await liff.init({ liffId: "2009930455-BQ1aMLq6" });
+    if (!liff.isLoggedIn()) { liff.login(); return; }
+    const p = await liff.getProfile();
+    uId = p.userId;
+    fetchProfile();
+  }
+
+  async function fetchProfile() {
+    const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'getProfile', userId: uId }) });
+    const result = await res.json();
+    document.getElementById('loader').style.display = 'none';
+    if (result.status === 'success') {
+      document.getElementById('disp-name').innerText = result.data.name;
+      document.getElementById('disp-empId').innerText = result.data.empId;
+      document.getElementById('disp-dept').innerText = result.data.dept;
+      document.getElementById('disp-score').innerText = result.data.score;
+      if (result.data.photo) document.getElementById('user-photo').src = result.data.photo;
+      document.getElementById('profile-section').style.display = 'block';
+      fetchHistory();
+    } else {
+      document.getElementById('register-section').style.display = 'block';
     }
+  }
 
-    async function loadData() {
-        const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'getProfile', userId: userId }) });
-        const result = await res.json();
-        
-        if (result.status === 'success') {
-            document.getElementById('u-name').innerText = result.data.name;
-            document.getElementById('u-id').innerText = result.data.empId;
-            document.getElementById('u-dept').innerText = result.data.dept;
-            document.getElementById('u-score').innerText = result.data.score;
-            if(result.data.photo) document.getElementById('u-photo').src = result.data.photo;
-            
-            loadHistory();
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('main-content').style.display = 'block';
-        } else {
-            alert("ไม่พบข้อมูลสมาชิก กรุณาลงทะเบียนผ่านระบบ");
-        }
-    }
+  async function handleFileUpload(input) {
+    if (!input.files || !input.files[0]) return;
+    const file = input.files[0];
+    const reader = new FileReader();
+    const status = document.getElementById('upload-status');
+    const photo = document.getElementById('user-photo');
+    
+    status.style.display = "block";
+    photo.style.opacity = "0.4";
 
-    async function uploadImage(input) {
-        if (!input.files[0]) return;
-        const photo = document.getElementById('u-photo');
-        photo.style.opacity = "0.3";
-        
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-            const res = await fetch(GAS_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: 'uploadImage', userId: userId, base64: e.target.result })
-            });
-            const data = await res.json();
-            if(data.status === 'success') {
-                photo.src = data.imageUrl;
-                alert("อัปเดตรูปโปรไฟล์แล้ว!");
-            }
-            photo.style.opacity = "1";
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
+    reader.onload = async function(e) {
+      const base64 = e.target.result;
+      const res = await fetch(GAS_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'uploadImage', userId: uId, base64: base64 })
+      });
+      const result = await res.json();
+      if (result.status === 'success') {
+        photo.src = result.imageUrl;
+        alert("อัปเดตรูปโปรไฟล์แล้ว!");
+      }
+      status.style.display = "none";
+      photo.style.opacity = "1";
+    };
+    reader.readAsDataURL(file);
+  }
 
-    async function loadHistory() {
-        const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'getHistory', userId: userId }) });
-        const result = await res.json();
-        const list = document.getElementById('history-list');
-        list.innerHTML = "";
-        result.data.forEach(h => {
-            list.innerHTML += `
-                <div class="h-item">
-                    <div class="h-date">${h.date}</div>
-                    <div class="h-detail">
-                        <div>${h.reason}</div>
-                        <div style="font-weight:bold; color:orange">${h.score} Coins <span class="badge ${h.status === 'ผ่าน' ? 'pass' : 'fail'}">${h.status}</span></div>
-                    </div>
-                </div>`;
-        });
-    }
+  async function fetchHistory() {
+    const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'getHistory', userId: uId }) });
+    const result = await res.json();
+    const list = document.getElementById('history-list');
+    list.innerHTML = result.data.length ? "" : "<p style='text-align:center; font-size:12px; color:#999;'>ยังไม่มีประวัติ</p>";
+    result.data.forEach(q => {
+      list.innerHTML += `
+        <div class="q-item">
+          <div class="q-date">${q.date}</div>
+          <div class="q-info">
+            <div class="q-reason">${q.reason}</div>
+            <div class="q-score">${q.score} Coins <span class="badge ${q.status === 'ผ่าน' ? 'pass' : 'fail'}">${q.status}</span></div>
+          </div>
+        </div>`;
+    });
+  }
 
-    window.onload = init;
+  async function submitForm() {
+    const e = document.getElementById('reg-empId').value;
+    const n = document.getElementById('reg-name').value;
+    if(!e || !n) return alert("กรุณากรอกข้อมูล");
+    await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'register', userId: uId, empId: e, name: n, dept: 'E&I' }) });
+    location.reload();
+  }
+
+  window.onload = init;
 </script>
 </body>
 </html>
