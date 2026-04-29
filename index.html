@@ -30,12 +30,12 @@
 
   <script>
     // 🛑 1. ใส่ URL ของ Web App จาก Google Apps Script (ลงท้ายด้วย /exec)
-    const GAS_URL = "https://script.google.com/macros/s/ใส่_WEB_APP_ID_ที่นี่/exec";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbz6PBJqVbULFjP_v5I0tQqHkxYQnkpba8Ssuqer94PSP1-oF6GiTo0OzEpLTIzIB9IyjA/exec";
     let userId = "";
 
     async function init() {
       // 🛑 2. ใส่ LIFF ID หน้าลงทะเบียน
-      await liff.init({ liffId: "ใส่_LIFF_ID_หน้า_ลงทะเบียน_ที่นี่" });
+      await liff.init({ liffId: "2009930455-BQ1aMLq6" });
       if (!liff.isLoggedIn()) {
         liff.login();
         return;
