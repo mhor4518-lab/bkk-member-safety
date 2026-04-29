@@ -10,7 +10,7 @@
     .card { background: white; width: 320px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; overflow: hidden; }
     .header { background: #0056b3; color: white; padding: 30px 10px; }
     .header h3 { margin: 0; }
-    .score-box { width: 100px; height: 100px; background: white; border-radius: 50%; margin: -50px auto 20px; display: flex; flex-direction: column; justify-content: center; border: 4px solid #0056b3; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .score-box { width: 100px; height: 100px; background: white; border-radius: 50%; margin: -50px auto 20px; display: flex; flex-direction: column; justify-content: center; border: 4px solid #0056b3; box-shadow: 0 4px 10px rgba(0,0,0,0.1); background-color: white; }
     .score { font-size: 28px; font-weight: bold; color: #0056b3; }
     .info { padding: 0 20px 20px; text-align: left; }
     .item { margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
@@ -21,7 +21,7 @@
 </head>
 <body>
 
-  <div id="loader">กำลังโหลดข้อมูล...</div>
+  <div id="loader">กำลังโหลดข้อมูลคะแนน...</div>
 
   <div class="card" id="main" style="display:none;">
     <div class="header"><h3>My Safety Coins</h3></div>
@@ -37,12 +37,13 @@
   </div>
 
   <script>
-    // 🛑 1. ใส่ URL ของ Web App (เหมือนกับหน้า index.html)
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbz6PBJqVbULFjP_v5I0tQqHkxYQnkpba8Ssuqer94PSP1-oF6GiTo0OzEpLTIzIB9IyjA/exec";
+    // 🛑 1. ใส่ URL ของ Web App (อันเดียวกับหน้าลงทะเบียน)
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzfhggUUvJcs2Qv7xrCnAuQHz3tKWAs794lZHSLYQcx74_veW3iGGUeHjKJvYDiB7uP/exec";
 
     async function init() {
-      // 🛑 2. ใส่ LIFF ID หน้า Profile
-      await liff.init({ liffId: "2009930455-BQ1aMLq6" });
+      // 🛑 2. ใส่ LIFF ID ของหน้า Profile
+      await liff.init({ liffId: "ใส่_LIFF_ID_หน้า_PROFILE_ที่นี่" });
+      
       if (!liff.isLoggedIn()) {
         liff.login();
         return;
@@ -56,26 +57,35 @@
       const payload = { action: 'getProfile', userId: userId };
       
       try {
+        // 🟢 แก้ไขตรงนี้: เพิ่ม Headers และ Redirect แบบเดียวกับหน้า Index
         const response = await fetch(GAS_URL, {
           method: 'POST',
-          body: JSON.stringify(payload)
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8',
+          },
+          body: JSON.stringify(payload),
+          redirect: 'follow'
         });
+        
         const result = await response.json();
         
         if (result.status === 'success') {
+          // นำข้อมูลมาแสดงบนหน้าจอ
           document.getElementById('name').innerText = result.data.name;
           document.getElementById('empId').innerText = result.data.empId;
           document.getElementById('dept').innerText = result.data.dept;
           document.getElementById('score').innerText = result.data.score;
           
+          // ซ่อนข้อความโหลด และแสดง Card
           document.getElementById('loader').style.display = 'none';
           document.getElementById('main').style.display = 'block';
         } else {
-          alert("ไม่พบข้อมูล กรุณาลงทะเบียนก่อนครับ");
+          alert("ไม่พบข้อมูลสมาชิกของ TTSBKK กรุณาลงทะเบียนก่อนครับ");
           liff.closeWindow();
         }
       } catch (err) {
-        alert("เกิดข้อผิดพลาดในการโหลดข้อมูล");
+        console.error("Fetch Error:", err);
+        alert("เกิดข้อผิดพลาดในการโหลดข้อมูล โปรดตรวจสอบการเชื่อมต่อ");
       }
     }
 
