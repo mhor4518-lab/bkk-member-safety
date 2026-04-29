@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ลงทะเบียนสมาชิก</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f9; padding: 20px; }
+    .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
+    h3 { color: #0056b3; text-align: center; margin-bottom: 5px; }
+    p.subtitle { text-align: center; color: #666; font-size: 12px; margin-top: 0; margin-bottom: 20px; }
+    input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+    button { width: 100%; padding: 12px; background: #0056b3; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h3>📝 ลงทะเบียน Safety Quest</h3>
+    <p class="subtitle">E&I Section | Paperless 2028</p>
+    <input type="text" id="empId" placeholder="รหัสพนักงาน (เช่น 12345)">
+    <input type="text" id="name" placeholder="ชื่อ-นามสกุล">
+    <select id="department">
+      <option value="E&I">E&I (Electrical and Instrument)</option>
+      <option value="M&U">M&U (Maintenance and Utility)</option>
+    </select>
+    <button id="btn" onclick="submitForm()">บันทึกข้อมูล</button>
+  </div>
+
+  <script>
+    // 🛑 1. ใส่ URL ของ Web App จาก Google Apps Script (ลงท้ายด้วย /exec)
+    const GAS_URL = "https://script.google.com/macros/s/ใส่_WEB_APP_ID_ที่นี่/exec";
+    let userId = "";
+
+    async function init() {
+      // 🛑 2. ใส่ LIFF ID หน้าลงทะเบียน
+      await liff.init({ liffId: "ใส่_LIFF_ID_หน้า_ลงทะเบียน_ที่นี่" });
+      if (!liff.isLoggedIn()) {
+        liff.login();
+        return;
+      }
+      const profile = await liff.getProfile();
+      userId = profile.userId;
+    }
+
+    async function submitForm() {
+      const empId = document.getElementById('empId').value;
+      const name = document.getElementById('name').value;
+      const dept = document.getElementById('department').value;
+
+      if (!empId || !name) return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+
+      document.getElementById('btn').disabled = true;
+      document.getElementById('btn').innerText = "กำลังบันทึกข้อมูล...";
+
+      const payload = { action: 'register', userId: userId, empId: empId, name: name, dept: dept };
+
+      try {
+        const response = await fetch(GAS_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+          alert(result.message);
+          liff.closeWindow();
+        } else {
+          alert("เกิดข้อผิดพลาด: " + result.message);
+          document.getElementById('btn').disabled = false;
+        }
+      } catch (err) {
+        alert("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้");
+        document.getElementById('btn').disabled = false;
+      }
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Profile</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eef2f7; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+    .card { background: white; width: 320px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; overflow: hidden; }
+    .header { background: #0056b3; color: white; padding: 30px 10px; }
+    .header h3 { margin: 0; }
+    .score-box { width: 100px; height: 100px; background: white; border-radius: 50%; margin: -50px auto 20px; display: flex; flex-direction: column; justify-content: center; border: 4px solid #0056b3; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .score { font-size: 28px; font-weight: bold; color: #0056b3; }
+    .info { padding: 0 20px 20px; text-align: left; }
+    .item { margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
+    .label { font-size: 12px; color: #888; }
+    .val { font-weight: bold; color: #333; font-size: 14px; }
+    #loader { color: #0056b3; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <div id="loader">กำลังโหลดข้อมูล...</div>
+
+  <div class="card" id="main" style="display:none;">
+    <div class="header"><h3>My Safety Coins</h3></div>
+    <div class="score-box">
+      <div class="score" id="score">0</div>
+      <div style="font-size: 10px; color: #666;">Coins</div>
+    </div>
+    <div class="info">
+      <div class="item"><div class="label">ชื่อ-นามสกุล</div><div class="val" id="name">-</div></div>
+      <div class="item"><div class="label">รหัสพนักงาน</div><div class="val" id="empId">-</div></div>
+      <div class="item"><div class="label">หน่วยงาน</div><div class="val" id="dept">-</div></div>
+    </div>
+  </div>
+
+  <script>
+    // 🛑 1. ใส่ URL ของ Web App (เหมือนกับหน้า index.html)
+    const GAS_URL = "https://script.google.com/macros/s/ใส่_WEB_APP_ID_ที่นี่/exec";
+
+    async function init() {
+      // 🛑 2. ใส่ LIFF ID หน้า Profile
+      await liff.init({ liffId: "ใส่_LIFF_ID_หน้า_PROFILE_ที่นี่" });
+      if (!liff.isLoggedIn()) {
+        liff.login();
+        return;
+      }
+      
+      const profile = await liff.getProfile();
+      loadProfileData(profile.userId);
+    }
+
+    async function loadProfileData(userId) {
+      const payload = { action: 'getProfile', userId: userId };
+      
+      try {
+        const response = await fetch(GAS_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+          document.getElementById('name').innerText = result.data.name;
+          document.getElementById('empId').innerText = result.data.empId;
+          document.getElementById('dept').innerText = result.data.dept;
+          document.getElementById('score').innerText = result.data.score;
+          
+          document.getElementById('loader').style.display = 'none';
+          document.getElementById('main').style.display = 'block';
+        } else {
+          alert("ไม่พบข้อมูล กรุณาลงทะเบียนก่อนครับ");
+          liff.closeWindow();
+        }
+      } catch (err) {
+        alert("เกิดข้อผิดพลาดในการโหลดข้อมูล");
+      }
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
