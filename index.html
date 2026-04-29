@@ -3,169 +3,127 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Daily Safety Quest</title>
+  <title>Safety Quest Profile</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eef2f7; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+    :root { --primary: #0056b3; --gold: #f39c12; }
+    body { font-family: 'Prompt', sans-serif; background: #f0f2f5; margin: 0; padding: 20px; display: flex; justify-content: center; }
+    .container { width: 100%; max-width: 380px; }
     
-    /* สไตล์สำหรับกล่องการ์ดทั่วไป */
-    .card { background: white; width: 90%; max-width: 350px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; padding-bottom: 20px; }
+    /* ID Card Style */
+    .id-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 8px solid var(--primary); }
+    .card-header { background: var(--primary); color: white; padding: 20px; text-align: center; }
+    .profile-img { width: 90px; height: 90px; background: #fff; border-radius: 50%; margin: -45px auto 10px; border: 4px solid #f0f2f5; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .profile-img img { width: 60%; opacity: 0.7; }
+    .user-name { font-size: 20px; font-weight: 600; text-align: center; margin: 5px 0; color: #333; }
+    .user-dept { text-align: center; font-size: 13px; color: #666; background: #f8f9fa; width: fit-content; margin: 0 auto 15px; padding: 4px 15px; border-radius: 20px; }
     
-    /* สไตล์เฉพาะหน้าลงทะเบียน */
-    .register-container { padding: 25px; text-align: center; }
-    .register-container h3 { color: #0056b3; margin-bottom: 5px; }
-    .register-container p.subtitle { color: #666; font-size: 12px; margin-top: 0; margin-bottom: 20px; }
-    input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; text-align: left; }
-    button { width: 100%; padding: 12px; background: #0056b3; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-    button:disabled { background: #ccc; cursor: not-allowed; }
+    .stats { display: flex; border-top: 1px solid #eee; }
+    .stat-box { flex: 1; padding: 15px; text-align: center; border-right: 1px solid #eee; }
+    .stat-box:last-child { border-right: none; }
+    .stat-label { font-size: 11px; color: #999; text-transform: uppercase; display: block; }
+    .stat-val { font-size: 18px; font-weight: bold; color: var(--primary); }
 
-    /* สไตล์เฉพาะหน้า Profile */
-    .header-profile { background: #0056b3; color: white; padding: 30px 10px; text-align: center; }
-    .header-profile h3 { margin: 0; }
-    .score-box { width: 100px; height: 100px; background: white; border-radius: 50%; margin: -50px auto 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 4px solid #0056b3; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    .score { font-size: 28px; font-weight: bold; color: #0056b3; }
-    .info { padding: 0 20px; text-align: left; }
-    .item { margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
-    .label { font-size: 12px; color: #888; }
-    .val { font-weight: bold; color: #333; font-size: 14px; }
-
-    /* สไตล์หน้าจอโหลด */
-    #loader { color: #0056b3; font-weight: bold; text-align: center; width: 100%; position: absolute; top: 45%; }
+    /* History List */
+    .h-title { margin: 25px 0 10px; font-size: 15px; color: #555; font-weight: 600; }
+    .q-item { background: white; border-radius: 12px; padding: 12px; margin-bottom: 8px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    .q-date { font-size: 11px; color: #bbb; padding-right: 12px; border-right: 1px solid #eee; margin-right: 12px; text-align: center; }
+    .q-info { flex: 1; }
+    .q-reason { font-size: 13px; color: #444; margin-bottom: 2px; }
+    .q-score { font-size: 12px; font-weight: bold; color: var(--gold); }
+    .badge { font-size: 9px; padding: 2px 8px; border-radius: 8px; margin-left: 5px; }
+    .pass { background: #e6ffed; color: #28a745; }
+    .fail { background: #ffeef0; color: #dc3545; }
   </style>
 </head>
 <body>
 
-  <div id="loader">กำลังตรวจสอบสถานะสมาชิก... ⏳</div>
+<div class="container">
+  <div id="loader" style="text-align: center; margin-top: 50px;">⏳ กำลังโหลด...</div>
 
-  <div class="card" id="register-section" style="display:none;">
-    <div class="register-container">
-      <h3>📝 ลงทะเบียน Safety Quest</h3>
-      <p class="subtitle">โครงการ Paperless 2028 | TTSBKK</p>
-      <input type="text" id="empId" placeholder="รหัสพนักงาน (เช่น 12345)">
-      <input type="text" id="name" placeholder="ชื่อ-นามสกุล">
-      <select id="department">
-        <option value="E&I">E&I (Electrical and Instrument)</option>
-        <option value="M&U">M&U (Maintenance and Utility)</option>
-      </select>
-      <button id="btn-submit" onclick="submitForm()">บันทึกข้อมูล</button>
+  <div id="profile-section" style="display:none;">
+    <div class="id-card">
+      <div class="card-header">
+        <div style="font-size: 12px; opacity: 0.8;">PAPERLESS 2028 | TTSBKK</div>
+        <div style="font-weight: 600; margin-top: 5px;">STAFF IDENTITY CARD</div>
+      </div>
+      <div class="profile-img"><img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"></div>
+      <div class="user-name" id="disp-name">-</div>
+      <div class="user-dept" id="disp-dept">-</div>
+      <div class="stats">
+        <div class="stat-box"><span class="stat-label">ID CARD</span><span class="stat-val" id="disp-empId">-</span></div>
+        <div class="stat-box"><span class="stat-label">COINS</span><span class="stat-val" id="disp-score" style="color: var(--gold);">0</span></div>
+      </div>
     </div>
+
+    <div class="h-title">📊 ประวัติภารกิจล่าสุด</div>
+    <div id="history-list"></div>
+    <button onclick="liff.closeWindow()" style="width:100%; margin-top:15px; padding:10px; border:none; border-radius:10px; background:#ddd;">ปิดหน้าต่าง</button>
   </div>
 
-  <div class="card" id="profile-section" style="display:none;">
-    <div class="header-profile"><h3>My Safety Coins</h3></div>
-    <div class="score-box">
-      <div class="score" id="disp-score">0</div>
-      <div style="font-size: 10px; color: #666;">Coins</div>
-    </div>
-    <div class="info">
-      <div class="item"><div class="label">ชื่อ-นามสกุล</div><div class="val" id="disp-name">-</div></div>
-      <div class="item"><div class="label">รหัสพนักงาน</div><div class="val" id="disp-empId">-</div></div>
-      <div class="item"><div class="label">หน่วยงาน</div><div class="val" id="disp-dept">-</div></div>
-    </div>
-    <div style="padding: 0 20px;">
-      <button onclick="liff.closeWindow()" style="background: #e2e6ea; color: #333;">ปิดหน้าจอ</button>
-    </div>
+  <div id="register-section" style="display:none; background:white; padding:25px; border-radius:20px; text-align:center;">
+    <h3>📝 ลงทะเบียนพนักงาน</h3>
+    <input type="text" id="empId" placeholder="รหัสพนักงาน" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px;">
+    <input type="text" id="name" placeholder="ชื่อ-นามสกุล" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px;">
+    <button onclick="submitForm()" style="width:100%; padding:10px; background:var(--primary); color:white; border:none; border-radius:8px;">บันทึกข้อมูล</button>
   </div>
+</div>
 
-  <script>
-    // 🛑 1. ใส่ URL ของ Web App (ดึงข้อมูล/บันทึกข้อมูล)
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbyYEEVYkFUwMeRcHeYM37AraJBwFvYgy8v5GA6DmNCxyfxDCfwzgj_cTCtcXuLtc4XBcg/exec";
-    let userId = "";
+<script>
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbyqQbyQbnuc1cyTZLvUq1gK8LK-q7nWi90EHJfcxiMSBerO-TQ8mAoEYwtiM3zaUWc/exec";
+  let uId = "";
 
-    // ฟังก์ชันเริ่มต้นทำงานเมื่อเปิด LIFF
-    async function init() {
-      // 🛑 2. ใส่ LIFF ID (ใช้แค่ตัวเดียวพอ)
-      await liff.init({ liffId: "2009930455-BQ1aMLq6" });
-      
-      if (!liff.isLoggedIn()) {
-        liff.login();
-        return;
-      }
-      
-      const profile = await liff.getProfile();
-      userId = profile.userId;
-      
-      // เมื่อได้ UserID แล้ว ให้ตรวจสอบประวัติทันที
-      checkUserStatus();
+  async function init() {
+    await liff.init({ liffId: "2009930455-BQ1aMLq6" });
+    if (!liff.isLoggedIn()) { liff.login(); return; }
+    const p = await liff.getProfile();
+    uId = p.userId;
+    fetchProfile();
+  }
+
+  async function fetchProfile() {
+    const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'getProfile', userId: uId }) });
+    const result = await res.json();
+    document.getElementById('loader').style.display = 'none';
+    if (result.status === 'success') {
+      document.getElementById('disp-name').innerText = result.data.name;
+      document.getElementById('disp-empId').innerText = result.data.empId;
+      document.getElementById('disp-dept').innerText = result.data.dept;
+      document.getElementById('disp-score').innerText = result.data.score;
+      document.getElementById('profile-section').style.display = 'block';
+      fetchHistory();
+    } else {
+      document.getElementById('register-section').style.display = 'block';
     }
+  }
 
-    // ฟังก์ชันตรวจสอบประวัติกับฐานข้อมูล
-    async function checkUserStatus() {
-      try {
-        const response = await fetch(GAS_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'getProfile', userId: userId }),
-          redirect: 'follow'
-        });
-        
-        const result = await response.json();
-        
-        // ซ่อนตัวโหลดข้อมูล
-        document.getElementById('loader').style.display = 'none';
-        
-        if (result.status === 'success') {
-          // เคยสมัครแล้ว -> เอาข้อมูลมายัดใส่หน้า Profile แล้วโชว์
-          document.getElementById('disp-name').innerText = result.data.name;
-          document.getElementById('disp-empId').innerText = result.data.empId;
-          document.getElementById('disp-dept').innerText = result.data.dept;
-          document.getElementById('disp-score').innerText = result.data.score;
-          document.getElementById('profile-section').style.display = 'block';
-        } else {
-          // ยังไม่เคยสมัคร -> โชว์หน้าลงทะเบียน
-          document.getElementById('register-section').style.display = 'block';
-        }
-      } catch (err) {
-        console.error("Fetch Error:", err);
-        alert("เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์");
-      }
-    }
+  async function fetchHistory() {
+    const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'getHistory', userId: uId }) });
+    const result = await res.json();
+    const list = document.getElementById('history-list');
+    list.innerHTML = result.data.length ? "" : "<p style='text-align:center; font-size:12px; color:#999;'>ยังไม่มีประวัติ</p>";
+    result.data.forEach(q => {
+      list.innerHTML += `
+        <div class="q-item">
+          <div class="q-date">${q.date.split('/').slice(0,2).join('/')}</div>
+          <div class="q-info">
+            <div class="q-reason">${q.reason}</div>
+            <div class="q-score">${q.score} Coins <span class="badge ${q.status === 'ผ่าน' ? 'pass' : 'fail'}">${q.status}</span></div>
+          </div>
+        </div>`;
+    });
+  }
 
-    // ฟังก์ชันส่งข้อมูลลงทะเบียน
-    async function submitForm() {
-      const empId = document.getElementById('empId').value;
-      const name = document.getElementById('name').value;
-      const dept = document.getElementById('department').value;
+  async function submitForm() {
+    const e = document.getElementById('empId').value;
+    const n = document.getElementById('name').value;
+    if(!e || !n) return alert("กรุณากรอกข้อมูล");
+    await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'register', userId: uId, empId: e, name: n, dept: 'E&I' }) });
+    location.reload();
+  }
 
-      if (!empId || !name) return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
-
-      const btn = document.getElementById('btn-submit');
-      btn.disabled = true;
-      btn.innerText = "กำลังบันทึกข้อมูล...";
-
-      try {
-        const response = await fetch(GAS_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'register', userId: userId, empId: empId, name: name, dept: dept }),
-          redirect: 'follow'
-        });
-        
-        const result = await response.json();
-        
-        if (result.status === 'success') {
-          alert("ลงทะเบียนสำเร็จ! ระบบจะพาท่านไปยังหน้าคะแนนสะสม");
-          // เมื่อลงทะเบียนเสร็จ ให้สลับหน้าไปโชว์ Profile โดยดึงคะแนนตั้งต้น (0)
-          document.getElementById('register-section').style.display = 'none';
-          document.getElementById('loader').style.display = 'block';
-          document.getElementById('loader').innerText = "กำลังโหลดโปรไฟล์...";
-          
-          // โหลดข้อมูลใหม่เพื่อความชัวร์
-          checkUserStatus();
-        } else {
-          alert("เกิดข้อผิดพลาด: " + result.message);
-          btn.disabled = false;
-          btn.innerText = "บันทึกข้อมูล";
-        }
-      } catch (err) {
-        alert("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้");
-        btn.disabled = false;
-        btn.innerText = "บันทึกข้อมูล";
-      }
-    }
-
-    // เริ่มการทำงาน
-    window.onload = init;
-  </script>
+  window.onload = init;
+</script>
 </body>
 </html>
