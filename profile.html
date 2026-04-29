@@ -6,11 +6,10 @@
   <style>
     body { font-family: 'Prompt', sans-serif; background: #f8f9fc; padding: 30px; }
     .header { background: #00429d; color: white; padding: 20px; border-radius: 15px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
-    table { width: 100%; background: white; border-radius: 15px; border-collapse: collapse; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    table { width: 100%; background: white; border-radius: 15px; border-collapse: collapse; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
     th, td { padding: 15px 30px; text-align: left; border-bottom: 1px solid #eee; }
     th { background: #fdfdfd; color: #888; font-size: 12px; text-transform: uppercase; }
     .score { font-weight: bold; color: #00429d; background: #eef4ff; padding: 5px 12px; border-radius: 20px; }
-    .avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-right: 10px; }
   </style>
 </head>
 <body>
@@ -18,19 +17,19 @@
     <div><h1>SAFETY LEADERBOARD</h1><p>TTSBKK E&I Section Dashboard</p></div>
     <button onclick="loadData()">🔄 Refresh</button>
   </div>
-  <table id="table">
+  <table>
     <thead><tr><th>อันดับ</th><th>พนักงาน</th><th>รหัส</th><th>คะแนนสะสม</th></tr></thead>
     <tbody id="tbody"></tbody>
   </table>
   <script>
-    const URL = "https://script.google.com/macros/s/AKfycbx2pOIyXuzvSzXsZt2thlGCYdl6WCkSlEm5Mjd1p1JzPsPUPoNLltY2USe4DYqYQqFZ5g/exec";
+    const URL = "https://script.google.com/macros/s/AKfycbx_bFMVQG6pwTBE85V057Ho4NYEiE4wsYba_qEut4CkI4jerutaN_DmG-yIu2rvkW2vPg/exec";
     async function loadData() {
       const res = await fetch(URL, { method: 'POST', body: JSON.stringify({ action: 'getAllUsers' }) });
       const r = await res.json();
       const body = document.getElementById('tbody');
       body.innerHTML = "";
       r.data.forEach((u, i) => {
-        body.innerHTML += `<tr><td>${i+1}</td><td><img class="avatar" src="${u.photo || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}">${u.name}</td><td>${u.empId}</td><td><span class="score">${u.score} Coins</span></td></tr>`;
+        body.innerHTML += `<tr><td>${i+1}</td><td>👤 ${u.name}</td><td>${u.empId}</td><td><span class="score">${u.score} Coins</span></td></tr>`;
       });
     }
     window.onload = loadData;
