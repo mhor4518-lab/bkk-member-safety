@@ -12,10 +12,9 @@
     .container { width: 100%; max-width: 400px; }
     .id-card { background: white; border-radius: 25px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
     .card-header { background: var(--primary); color: white; padding: 50px 20px 80px 20px; text-align: center; }
-    .profile-img-wrapper { position: relative; width: 110px; height: 110px; margin: -55px auto 10px; z-index: 5; cursor: pointer; }
+    .profile-img-wrapper { position: relative; width: 110px; height: 110px; margin: -55px auto 10px; z-index: 5; }
     .profile-img { width: 100%; height: 100%; background: #fff; border-radius: 50%; border: 6px solid white; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
     .profile-img img { width: 100%; height: 100%; object-fit: cover; }
-    .edit-badge { position: absolute; bottom: 5px; right: 5px; background: var(--gold); color: white; width: 25px; height: 25px; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center; font-size: 14px; }
     .user-name { font-size: 22px; font-weight: 600; text-align: center; margin: 15px 0 5px; color: #333; }
     .user-dept { text-align: center; font-size: 13px; color: #666; background: #f0f2f5; width: fit-content; margin: 0 auto 25px; padding: 5px 20px; border-radius: 20px; }
     .stats { display: flex; border-top: 1px solid #f0f2f5; }
@@ -38,11 +37,9 @@
         <div style="font-size: 11px; opacity: 0.8;">PAPERLESS 2028 | TTSBKK</div>
         <div style="font-weight: 600; font-size: 18px;">STAFF IDENTITY CARD</div>
       </div>
-      <div class="profile-img-wrapper" onclick="document.getElementById('fileIn').click()">
+      <div class="profile-img-wrapper">
         <div class="profile-img"><img id="u-photo" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"></div>
-        <div class="edit-badge">📷</div>
       </div>
-      <input type="file" id="fileIn" style="display:none" accept="image/*" onchange="uploadImage(this)">
       <div class="user-name" id="u-name">-</div>
       <div class="user-dept" id="u-dept">-</div>
       <div class="stats">
@@ -54,15 +51,23 @@
     <div id="history-list"></div>
     <button onclick="liff.closeWindow()" style="width:100%; padding:12px; border:none; background:#ddd; border-radius:12px; cursor:pointer; margin-top:15px;">ปิดหน้าต่าง</button>
   </div>
+  <div id="register-section" style="display:none; background:white; padding:30px; border-radius:25px; text-align:center;">
+    <h3>📝 ลงทะเบียนพนักงาน</h3>
+    <input type="text" id="reg-empId" placeholder="รหัสพนักงาน" style="width:100%; padding:12px; margin-bottom:12px; border:1px solid #ddd; border-radius:10px;">
+    <input type="text" id="reg-name" placeholder="ชื่อ-นามสกุล" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:10px;">
+    <button onclick="submitForm()" style="width:100%; padding:12px; background:var(--primary); color:white; border:none; border-radius:10px; font-weight: bold;">ลงทะเบียน</button>
+  </div>
 </div>
 <script>
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbx2pOIyXuzvSzXsZt2thlGCYdl6WCkSlEm5Mjd1p1JzPsPUPoNLltY2USe4DYqYQqFZ5g/exec";
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbx_bFMVQG6pwTBE85V057Ho4NYEiE4wsYba_qEut4CkI4jerutaN_DmG-yIu2rvkW2vPg/exec";
   let uId = "";
   async function init() {
     await liff.init({ liffId: "2009930455-BQ1aMLq6" });
     if (!liff.isLoggedIn()) { liff.login(); return; }
     const p = await liff.getProfile();
     uId = p.userId;
+    // ดึงรูปจาก LINE Profile มาแสดงอัตโนมัติ
+    if(p.pictureUrl) document.getElementById('u-photo').src = p.pictureUrl;
     fetchProfile();
   }
   async function fetchProfile() {
@@ -74,19 +79,11 @@
       document.getElementById('u-id').innerText = r.data.empId;
       document.getElementById('u-dept').innerText = r.data.dept;
       document.getElementById('u-score').innerText = r.data.score;
-      if (r.data.photo) document.getElementById('u-photo').src = r.data.photo;
       document.getElementById('profile-section').style.display = 'block';
       fetchHistory();
+    } else {
+      document.getElementById('register-section').style.display = 'block';
     }
-  }
-  async function uploadImage(input) {
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'uploadImage', userId: uId, base64: e.target.result }) });
-      const r = await res.json();
-      if(r.status === 'success') document.getElementById('u-photo').src = r.imageUrl;
-    };
-    reader.readAsDataURL(input.files[0]);
   }
   async function fetchHistory() {
     const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'getHistory', userId: uId }) });
@@ -96,6 +93,13 @@
     r.data.forEach(h => {
       list.innerHTML += `<div class="h-item"><div class="q-date">${h.date}</div><div style="flex:1"><div style="font-size:13px">${h.reason}</div><div style="font-size:12px; font-weight:bold; color:var(--gold)">${h.score} Coins <span class="${h.status === 'ผ่าน' ? 'pass' : 'fail'}">${h.status}</span></div></div></div>`;
     });
+  }
+  async function submitForm() {
+    const e = document.getElementById('reg-empId').value;
+    const n = document.getElementById('reg-name').value;
+    if(!e || !n) return alert("กรุณากรอกข้อมูล");
+    await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'register', userId: uId, empId: e, name: n, dept: 'E&I' }) });
+    location.reload();
   }
   window.onload = init;
 </script>
