@@ -3,38 +3,78 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ลงทะเบียนสมาชิก</title>
+  <title>Daily Safety Quest</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f9; padding: 20px; }
-    .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
-    h3 { color: #0056b3; text-align: center; margin-bottom: 5px; }
-    p.subtitle { text-align: center; color: #666; font-size: 12px; margin-top: 0; margin-bottom: 20px; }
-    input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-    button { width: 100%; padding: 12px; background: #0056b3; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eef2f7; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+    
+    /* สไตล์สำหรับกล่องการ์ดทั่วไป */
+    .card { background: white; width: 90%; max-width: 350px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; padding-bottom: 20px; }
+    
+    /* สไตล์เฉพาะหน้าลงทะเบียน */
+    .register-container { padding: 25px; text-align: center; }
+    .register-container h3 { color: #0056b3; margin-bottom: 5px; }
+    .register-container p.subtitle { color: #666; font-size: 12px; margin-top: 0; margin-bottom: 20px; }
+    input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; text-align: left; }
+    button { width: 100%; padding: 12px; background: #0056b3; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
     button:disabled { background: #ccc; cursor: not-allowed; }
+
+    /* สไตล์เฉพาะหน้า Profile */
+    .header-profile { background: #0056b3; color: white; padding: 30px 10px; text-align: center; }
+    .header-profile h3 { margin: 0; }
+    .score-box { width: 100px; height: 100px; background: white; border-radius: 50%; margin: -50px auto 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 4px solid #0056b3; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .score { font-size: 28px; font-weight: bold; color: #0056b3; }
+    .info { padding: 0 20px; text-align: left; }
+    .item { margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
+    .label { font-size: 12px; color: #888; }
+    .val { font-weight: bold; color: #333; font-size: 14px; }
+
+    /* สไตล์หน้าจอโหลด */
+    #loader { color: #0056b3; font-weight: bold; text-align: center; width: 100%; position: absolute; top: 45%; }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h3>📝 ลงทะเบียน Safety Quest</h3>
-    <p class="subtitle">E&I Section | Paperless 2028</p>
-    <input type="text" id="empId" placeholder="รหัสพนักงาน (เช่น 12345)">
-    <input type="text" id="name" placeholder="ชื่อ-นามสกุล">
-    <select id="department">
-      <option value="E&I">E&I (Electrical and Instrument)</option>
-      <option value="M&U">M&U (Maintenance and Utility)</option>
-    </select>
-    <button id="btn" onclick="submitForm()">บันทึกข้อมูล</button>
+
+  <div id="loader">กำลังตรวจสอบสถานะสมาชิก... ⏳</div>
+
+  <div class="card" id="register-section" style="display:none;">
+    <div class="register-container">
+      <h3>📝 ลงทะเบียน Safety Quest</h3>
+      <p class="subtitle">โครงการ Paperless 2028 | TTSBKK</p>
+      <input type="text" id="empId" placeholder="รหัสพนักงาน (เช่น 12345)">
+      <input type="text" id="name" placeholder="ชื่อ-นามสกุล">
+      <select id="department">
+        <option value="E&I">E&I (Electrical and Instrument)</option>
+        <option value="M&U">M&U (Maintenance and Utility)</option>
+      </select>
+      <button id="btn-submit" onclick="submitForm()">บันทึกข้อมูล</button>
+    </div>
+  </div>
+
+  <div class="card" id="profile-section" style="display:none;">
+    <div class="header-profile"><h3>My Safety Coins</h3></div>
+    <div class="score-box">
+      <div class="score" id="disp-score">0</div>
+      <div style="font-size: 10px; color: #666;">Coins</div>
+    </div>
+    <div class="info">
+      <div class="item"><div class="label">ชื่อ-นามสกุล</div><div class="val" id="disp-name">-</div></div>
+      <div class="item"><div class="label">รหัสพนักงาน</div><div class="val" id="disp-empId">-</div></div>
+      <div class="item"><div class="label">หน่วยงาน</div><div class="val" id="disp-dept">-</div></div>
+    </div>
+    <div style="padding: 0 20px;">
+      <button onclick="liff.closeWindow()" style="background: #e2e6ea; color: #333;">ปิดหน้าจอ</button>
+    </div>
   </div>
 
   <script>
-    // 🛑 1. URL ของ Web App จาก Google Apps Script
+    // 🛑 1. ใส่ URL ของ Web App (ดึงข้อมูล/บันทึกข้อมูล)
     const GAS_URL = "https://script.google.com/macros/s/AKfycbzfhggUUvJcs2Qv7xrCnAuQHz3tKWAs794lZHSLYQcx74_veW3iGGUeHjKJvYDiB7uP/exec";
     let userId = "";
 
+    // ฟังก์ชันเริ่มต้นทำงานเมื่อเปิด LIFF
     async function init() {
-      // 🛑 2. LIFF ID หน้าลงทะเบียน
+      // 🛑 2. ใส่ LIFF ID (ใช้แค่ตัวเดียวพอ)
       await liff.init({ liffId: "2009930455-BQ1aMLq6" });
       
       if (!liff.isLoggedIn()) {
@@ -44,66 +84,87 @@
       
       const profile = await liff.getProfile();
       userId = profile.userId;
+      
+      // เมื่อได้ UserID แล้ว ให้ตรวจสอบประวัติทันที
+      checkUserStatus();
     }
 
-    async function submitForm() {
-      const empId = document.getElementById('empId').value;
-      const name = document.getElementById('name').value;
-      const dept = document.getElementById('department').value;
-
-      // ตรวจสอบการกรอกข้อมูล
-      if (!empId || !name) {
-        return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
-      }
-
-      // ปิดปุ่มชั่วคราวระหว่างรอเซิร์ฟเวอร์
-      document.getElementById('btn').disabled = true;
-      document.getElementById('btn').innerText = "กำลังบันทึกข้อมูล...";
-
-      // เตรียมข้อมูลส่งไปที่ Google Sheet
-      const payload = { 
-        action: 'register', 
-        userId: userId, 
-        empId: empId, 
-        name: name, 
-        dept: dept 
-      };
-
+    // ฟังก์ชันตรวจสอบประวัติกับฐานข้อมูล
+    async function checkUserStatus() {
       try {
-        // ส่งข้อมูลด้วย fetch API พร้อมตั้งค่าทะลุ CORS
         const response = await fetch(GAS_URL, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'text/plain;charset=utf-8', 
-          },
-          body: JSON.stringify(payload),
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'getProfile', userId: userId }),
           redirect: 'follow'
         });
         
         const result = await response.json();
         
-        // ตรวจสอบผลลัพธ์จาก Google Script
+        // ซ่อนตัวโหลดข้อมูล
+        document.getElementById('loader').style.display = 'none';
+        
         if (result.status === 'success') {
-          alert(result.message);
-          liff.closeWindow(); // ปิดหน้าจอ LIFF เมื่อสำเร็จ
+          // เคยสมัครแล้ว -> เอาข้อมูลมายัดใส่หน้า Profile แล้วโชว์
+          document.getElementById('disp-name').innerText = result.data.name;
+          document.getElementById('disp-empId').innerText = result.data.empId;
+          document.getElementById('disp-dept').innerText = result.data.dept;
+          document.getElementById('disp-score').innerText = result.data.score;
+          document.getElementById('profile-section').style.display = 'block';
         } else {
-          alert("เกิดข้อผิดพลาด: " + result.message);
-          resetButton();
+          // ยังไม่เคยสมัคร -> โชว์หน้าลงทะเบียน
+          document.getElementById('register-section').style.display = 'block';
         }
       } catch (err) {
         console.error("Fetch Error:", err);
-        alert("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ โปรดตรวจสอบการตั้งค่า Deploy ของ GAS");
-        resetButton();
+        alert("เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์");
       }
     }
 
-    // ฟังก์ชันสำหรับเปิดปุ่มกลับมาให้กดใหม่ได้กรณี Error
-    function resetButton() {
-      document.getElementById('btn').disabled = false;
-      document.getElementById('btn').innerText = "บันทึกข้อมูล";
+    // ฟังก์ชันส่งข้อมูลลงทะเบียน
+    async function submitForm() {
+      const empId = document.getElementById('empId').value;
+      const name = document.getElementById('name').value;
+      const dept = document.getElementById('department').value;
+
+      if (!empId || !name) return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+
+      const btn = document.getElementById('btn-submit');
+      btn.disabled = true;
+      btn.innerText = "กำลังบันทึกข้อมูล...";
+
+      try {
+        const response = await fetch(GAS_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'register', userId: userId, empId: empId, name: name, dept: dept }),
+          redirect: 'follow'
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+          alert("ลงทะเบียนสำเร็จ! ระบบจะพาท่านไปยังหน้าคะแนนสะสม");
+          // เมื่อลงทะเบียนเสร็จ ให้สลับหน้าไปโชว์ Profile โดยดึงคะแนนตั้งต้น (0)
+          document.getElementById('register-section').style.display = 'none';
+          document.getElementById('loader').style.display = 'block';
+          document.getElementById('loader').innerText = "กำลังโหลดโปรไฟล์...";
+          
+          // โหลดข้อมูลใหม่เพื่อความชัวร์
+          checkUserStatus();
+        } else {
+          alert("เกิดข้อผิดพลาด: " + result.message);
+          btn.disabled = false;
+          btn.innerText = "บันทึกข้อมูล";
+        }
+      } catch (err) {
+        alert("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้");
+        btn.disabled = false;
+        btn.innerText = "บันทึกข้อมูล";
+      }
     }
 
-    // เริ่มการทำงานเมื่อโหลดหน้าเว็บเสร็จ
+    // เริ่มการทำงาน
     window.onload = init;
   </script>
 </body>
