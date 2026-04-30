@@ -8,57 +8,55 @@
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
     :root { --primary: #0056b3; --gold: #f39c12; --bg: #f0f2f5; }
-    body { font-family: 'Prompt', sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; justify-content: center; }
-    .container { width: 100%; max-width: 400px; }
+    body { font-family: 'Prompt', sans-serif; background: var(--bg); margin: 0; padding: 15px; display: flex; justify-content: center; }
+    .container { width: 100%; max-width: 400px; padding-bottom: 30px; }
     
-    /* ID Card Design */
-    .id-card { background: white; border-radius: 25px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
-    
-    /* 🔵 ขยายแถบสีน้ำเงินให้กว้างขึ้น */
-    .card-header { 
-      background: var(--primary); 
-      color: white; 
-      padding: 50px 20px 70px 20px; /* เพิ่มพื้นที่ด้านบนและล่าง */
-      text-align: center; 
-    }
-    .card-header .brand { font-size: 11px; opacity: 0.8; letter-spacing: 1px; margin-bottom: 5px; }
-    .card-header .title { font-weight: 600; font-size: 18px; }
+    /* 🔵 ส่วนของเมนู Tabs สลับหน้า */
+    .tab-menu { display: flex; background: white; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; overflow: hidden; }
+    .tab-btn { flex: 1; padding: 12px; text-align: center; font-weight: 600; font-size: 14px; cursor: pointer; color: #888; transition: 0.3s; }
+    .tab-btn.active { background: var(--primary); color: white; }
 
-    .profile-img { 
-      width: 105px; 
-      height: 105px; 
-      background: #fff; 
-      border-radius: 50%; 
-      margin: -55px auto 10px; /* ขยับขึ้นไปทับแถบสีน้ำเงิน */
-      border: 6px solid white; 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      overflow: hidden; 
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
+    /* ID Card Design */
+    .id-card { background: white; border-radius: 25px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.1); margin-bottom: 20px; }
+    .card-header { background: var(--primary); color: white; padding: 30px 20px 50px 20px; text-align: center; position: relative; }
+    .card-header .brand { font-size: 10px; opacity: 0.8; letter-spacing: 1px; margin-bottom: 3px; }
+    .card-header .title { font-weight: 600; font-size: 16px; }
+
+    .profile-img { width: 90px; height: 90px; background: #fff; border-radius: 50%; margin: -45px auto 10px; border: 5px solid white; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
     .profile-img img { width: 65%; opacity: 0.8; }
     
-    .user-name { font-size: 22px; font-weight: 600; text-align: center; margin: 10px 0 5px; color: #333; }
-    .user-dept { text-align: center; font-size: 13px; color: #666; background: #f0f2f5; width: fit-content; margin: 0 auto 20px; padding: 5px 18px; border-radius: 20px; }
+    .user-name { font-size: 20px; font-weight: 600; text-align: center; margin: 10px 0 5px; color: #333; }
+    .user-dept { text-align: center; font-size: 12px; color: #666; background: #f0f2f5; width: fit-content; margin: 0 auto 15px; padding: 4px 15px; border-radius: 20px; }
     
     .stats { display: flex; border-top: 1px solid #f0f2f5; }
-    .stat-box { flex: 1; padding: 20px; text-align: center; border-right: 1px solid #f0f2f5; }
+    .stat-box { flex: 1; padding: 15px; text-align: center; border-right: 1px solid #f0f2f5; }
     .stat-box:last-child { border-right: none; }
-    .stat-label { font-size: 11px; color: #999; text-transform: uppercase; margin-bottom: 5px; display: block; }
-    .stat-val { font-size: 20px; font-weight: bold; color: var(--primary); }
+    .stat-label { font-size: 10px; color: #999; text-transform: uppercase; margin-bottom: 5px; display: block; }
+    .stat-val { font-size: 18px; font-weight: bold; color: var(--primary); }
 
     /* History List */
-    .h-title { margin: 25px 0 15px; font-size: 16px; color: #444; font-weight: 600; display: flex; align-items: center; }
-    .q-item { background: white; border-radius: 15px; padding: 15px; margin-bottom: 10px; display: flex; align-items: flex-start; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-    .q-date { font-size: 11px; color: #bbb; padding-right: 15px; border-right: 1px solid #f0f2f5; margin-right: 15px; min-width: 40px; text-align: center; padding-top: 5px; }
+    .h-title { margin: 15px 0 10px; font-size: 15px; color: #444; font-weight: 600; display: flex; align-items: center; padding: 0 10px; }
+    .q-item { background: white; border-radius: 12px; padding: 12px; margin-bottom: 10px; display: flex; align-items: flex-start; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .q-date { font-size: 11px; color: #bbb; padding-right: 12px; border-right: 1px solid #f0f2f5; margin-right: 12px; min-width: 35px; text-align: center; padding-top: 3px; }
     .q-info { flex: 1; }
-    .q-reason { font-size: 13px; color: #555; line-height: 1.5; margin-bottom: 5px; }
-    .q-score { font-size: 14px; font-weight: bold; color: var(--gold); display: flex; align-items: center; }
-    .badge { font-size: 10px; padding: 2px 10px; border-radius: 10px; margin-left: 8px; font-weight: 400; }
-    .pass { background: #e6ffed; color: #28a745; }
-    .fail { background: #ffeef0; color: #dc3545; }
-    
+    .q-reason { font-size: 12px; color: #555; line-height: 1.4; margin-bottom: 5px; }
+    .q-score { font-size: 12px; font-weight: bold; color: var(--gold); }
+    .badge { font-size: 9px; padding: 2px 8px; border-radius: 10px; margin-left: 5px; background: #e6ffed; color: #28a745; }
+
+    /* 🏆 Leaderboard Styles */
+    .rank-card .card-header { padding: 20px 15px 40px; }
+    .rank-card .profile-img { width: 70px; height: 70px; margin: -35px auto 5px; border-width: 4px; }
+    .rank-card .user-name { font-size: 16px; margin-top: 5px; }
+    .rank-card .stat-box { padding: 10px; }
+    .rank-card .stat-val { font-size: 16px; }
+    .quest-history-box { background: #fdfdfd; padding: 10px 15px; font-size: 11px; color: #666; border-top: 1px dashed #eee; }
+    .quest-line { display: flex; justify-content: space-between; margin-bottom: 5px; }
+    .quest-line:last-child { margin-bottom: 0; }
+    .rank-badge { position: absolute; top: 15px; left: 15px; font-size: 12px; font-weight: bold; background: white; color: var(--primary); padding: 3px 10px; border-radius: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+    .rank-1 { background: #ffd700; color: #856404; }
+    .rank-2 { background: #c0c0c0; color: #383d41; }
+    .rank-3 { background: #cd7f32; color: white; }
+
     .btn-close { width: 100%; margin-top: 15px; padding: 12px; border: none; border-radius: 12px; background: #e0e0e0; color: #333; font-weight: 600; cursor: pointer; }
   </style>
 </head>
@@ -67,6 +65,13 @@
 <div class="container">
   <div id="loader" style="text-align: center; margin-top: 50px;">⏳ กำลังโหลด...</div>
 
+  <!-- แท็บเมนู -->
+  <div class="tab-menu" id="nav-tabs" style="display:none;">
+    <div class="tab-btn active" id="tab-profile" onclick="switchTab('profile')">👤 มายโปรไฟล์</div>
+    <div class="tab-btn" id="tab-leaderboard" onclick="switchTab('leaderboard')">🏆 Top 10</div>
+  </div>
+
+  <!-- หน้า 1: โปรไฟล์ส่วนตัว -->
   <div id="profile-section" style="display:none;">
     <div class="id-card">
       <div class="card-header">
@@ -87,29 +92,23 @@
     <button class="btn-close" onclick="liff.closeWindow()">ปิดหน้าต่าง</button>
   </div>
 
-<div id="register-section" style="display:none; background:white; padding:30px; border-radius:25px; text-align:center; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
-    <h3 style="color: var(--primary);">📝 ลงทะเบียนพนักงาน</h3>
-    
-    <input type="text" id="empId" placeholder="รหัสพนักงาน" style="width:100%; padding:12px; margin-bottom:12px; border:1px solid #ddd; border-radius:10px; box-sizing: border-box;">
-    
-    <input type="text" id="name" placeholder="ชื่อ-นามสกุล เช่น (นายสมชาย ใจดี)" style="width:100%; padding:12px; margin-bottom:12px; border:1px solid #ddd; border-radius:10px; box-sizing: border-box;">
-    
-    <!-- เพิ่มช่องเลือกหน่วยงานตรงนี้ -->
-    <select id="dept" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:10px; box-sizing: border-box; font-family: 'Prompt', sans-serif; color: #555;">
-      <option value="" disabled selected>-- เลือกหน่วยงาน --</option>
-      <option value="E&I">E&I</option>
-      <option value="M&U">M&U</option>
-      <option value="SE">SE</option>
-      <option value="ADM">ADM</option>
-    </select>
-    </select>
+  <!-- หน้า 2: Leaderboard (Top 10) -->
+  <div id="leaderboard-section" style="display:none;">
+    <!-- ID Cards ของ Top 10 จะถูกแทรกที่นี่ -->
+  </div>
 
+  <!-- หน้าลงทะเบียน -->
+  <div id="register-section" style="display:none; background:white; padding:30px; border-radius:25px; text-align:center; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+    <h3 style="color: var(--primary);">📝 ลงทะเบียนพนักงาน</h3>
+    <input type="text" id="empId" placeholder="รหัสพนักงาน" style="width:100%; padding:12px; margin-bottom:12px; border:1px solid #ddd; border-radius:10px; box-sizing: border-box;">
+    <input type="text" id="name" placeholder="ชื่อ-นามสกุล" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:10px; box-sizing: border-box;">
     <button onclick="submitForm()" style="width:100%; padding:12px; background:var(--primary); color:white; border:none; border-radius:10px; font-weight: bold;">บันทึกข้อมูล</button>
   </div>
 </div>
 
 <script>
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbzM5bUfqns4iu6E9_tXt6efBXDsOso61oBAFxinWbHWDRhL_jFrr3SlFWNI0Ek6bYMCZw/exec";
+  // 🛑 ใส่ URL Web App อันล่าสุดของคุณ
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbxdOW0HfMeAW53CMG0gcpZQT4_iVHEXaXHyJd_u8lcL2Z5tRyW9U7et7cNlNstxAB22-w/exec";
   let uId = "";
 
   async function init() {
@@ -124,7 +123,9 @@
     const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'getProfile', userId: uId }) });
     const result = await res.json();
     document.getElementById('loader').style.display = 'none';
+    
     if (result.status === 'success') {
+      document.getElementById('nav-tabs').style.display = 'flex';
       document.getElementById('disp-name').innerText = result.data.name;
       document.getElementById('disp-empId').innerText = result.data.empId;
       document.getElementById('disp-dept').innerText = result.data.dept;
@@ -147,28 +148,84 @@
           <div class="q-date">${q.date}</div>
           <div class="q-info">
             <div class="q-reason">${q.reason}</div>
-            <div class="q-score">${q.score} Coins <span class="badge ${q.status === 'ผ่าน' ? 'pass' : 'fail'}">${q.status}</span></div>
+            <div class="q-score">${q.score} Coins <span class="badge">ผ่าน</span></div>
           </div>
         </div>`;
     });
   }
 
+  // ระบบดึงข้อมูล Top 10
+  async function loadLeaderboard() {
+    const container = document.getElementById('leaderboard-section');
+    container.innerHTML = "<div style='text-align:center; font-size:12px; color:#999; margin:20px;'>กำลังโหลดข้อมูล Top 10... ⏳</div>";
+    
+    const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'getTop10' }) });
+    const result = await res.json();
+    container.innerHTML = "";
+
+    if (result.data.length === 0) {
+      container.innerHTML = "<div style='text-align:center; font-size:12px; color:#999;'>ยังไม่มีผู้ทำคะแนน</div>";
+      return;
+    }
+
+    result.data.forEach((u, index) => {
+      const rank = index + 1;
+      let rankClass = rank === 1 ? "rank-1" : rank === 2 ? "rank-2" : rank === 3 ? "rank-3" : "";
+      
+      // สร้างลิสต์ภารกิจย่อย
+      let questHTML = "";
+      if (u.history && u.history.length > 0) {
+        u.history.forEach(h => {
+          questHTML += `<div class="quest-line"><span>🎯 ${h.reason.substring(0, 30)}...</span><span style="color:var(--gold); font-weight:bold;">+${h.score}</span></div>`;
+        });
+      } else {
+        questHTML = `<div style="text-align:center; color:#bbb;">ยังไม่มีประวัติภารกิจ</div>`;
+      }
+
+      // สร้าง Mini ID Card
+      container.innerHTML += `
+        <div class="id-card rank-card">
+          <div class="card-header">
+            <div class="rank-badge ${rankClass}">🏆 อันดับ ${rank}</div>
+            <div class="brand">TTSBKK E&I SECTION</div>
+            <div class="title">TOP PERFORMER</div>
+          </div>
+          <div class="profile-img"><img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"></div>
+          <div class="user-name">${u.name}</div>
+          <div class="user-dept">${u.dept} (รหัส: ${u.empId})</div>
+          <div class="stats">
+            <div class="stat-box"><span class="stat-label">TOTAL COINS</span><span class="stat-val" style="color:var(--gold);">${u.score}</span></div>
+          </div>
+          <div class="quest-history-box">
+            <div style="font-weight:bold; margin-bottom:5px; color:#444;">ภารกิจที่ทำสำเร็จล่าสุด:</div>
+            ${questHTML}
+          </div>
+        </div>`;
+    });
+    
+    container.innerHTML += `<button class="btn-close" onclick="liff.closeWindow()">ปิดหน้าต่าง</button>`;
+  }
+
+  function switchTab(tabId) {
+    document.getElementById('tab-profile').classList.remove('active');
+    document.getElementById('tab-leaderboard').classList.remove('active');
+    document.getElementById('profile-section').style.display = 'none';
+    document.getElementById('leaderboard-section').style.display = 'none';
+
+    document.getElementById('tab-' + tabId).classList.add('active');
+    document.getElementById(tabId + '-section').style.display = 'block';
+
+    // ถ้ากดแท็บ Leaderboard ให้โหลดข้อมูล Top 10 (ดึงใหม่ทุกครั้งให้ข้อมูลอัปเดต)
+    if (tabId === 'leaderboard') {
+      loadLeaderboard();
+    }
+  }
+
   async function submitForm() {
     const e = document.getElementById('empId').value;
     const n = document.getElementById('name').value;
-    const d = document.getElementById('dept').value; // ดึงค่าจากช่อง Dropdown ที่เราเพิ่งเพิ่ม
-
-    // เช็กว่ากรอกข้อมูลครบไหม (รหัส, ชื่อ, หน่วยงาน)
-    if(!e || !n || !d) {
-      return alert("กรุณากรอกข้อมูลและเลือกหน่วยงานให้ครบถ้วน");
-    }
-
-    // เปลี่ยนจาก dept: 'E&I' แบบฝังตายตัว เป็น dept: d ที่ผู้ใช้เลือกมา
-    await fetch(GAS_URL, { 
-      method: 'POST', 
-      body: JSON.stringify({ action: 'register', userId: uId, empId: e, name: n, dept: d }) 
-    });
-    
+    if(!e || !n) return alert("กรุณากรอกข้อมูล");
+    await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'register', userId: uId, empId: e, name: n, dept: 'E&I' }) });
     location.reload();
   }
   window.onload = init;
