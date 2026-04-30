@@ -87,10 +87,20 @@
     <button class="btn-close" onclick="liff.closeWindow()">ปิดหน้าต่าง</button>
   </div>
 
-  <div id="register-section" style="display:none; background:white; padding:30px; border-radius:25px; text-align:center; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+<div id="register-section" style="display:none; background:white; padding:30px; border-radius:25px; text-align:center; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
     <h3 style="color: var(--primary);">📝 ลงทะเบียนพนักงาน</h3>
+    
     <input type="text" id="empId" placeholder="รหัสพนักงาน" style="width:100%; padding:12px; margin-bottom:12px; border:1px solid #ddd; border-radius:10px; box-sizing: border-box;">
-    <input type="text" id="name" placeholder="ชื่อ-นามสกุล" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:10px; box-sizing: border-box;">
+    
+    <input type="text" id="name" placeholder="ชื่อ-นามสกุล" style="width:100%; padding:12px; margin-bottom:12px; border:1px solid #ddd; border-radius:10px; box-sizing: border-box;">
+    
+    <!-- เพิ่มช่องเลือกหน่วยงานตรงนี้ -->
+    <select id="dept" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:10px; box-sizing: border-box; font-family: 'Prompt', sans-serif; color: #555;">
+      <option value="" disabled selected>-- เลือกหน่วยงาน --</option>
+      <option value="E&I">E&I</option>
+      <option value="M&U">M&U</option>
+    </select>
+
     <button onclick="submitForm()" style="width:100%; padding:12px; background:var(--primary); color:white; border:none; border-radius:10px; font-weight: bold;">บันทึกข้อมูล</button>
   </div>
 </div>
@@ -143,8 +153,19 @@
   async function submitForm() {
     const e = document.getElementById('empId').value;
     const n = document.getElementById('name').value;
-    if(!e || !n) return alert("กรุณากรอกข้อมูล");
-    await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'register', userId: uId, empId: e, name: n, dept: 'E&I' }) });
+    const d = document.getElementById('dept').value; // ดึงค่าจากช่อง Dropdown ที่เราเพิ่งเพิ่ม
+
+    // เช็กว่ากรอกข้อมูลครบไหม (รหัส, ชื่อ, หน่วยงาน)
+    if(!e || !n || !d) {
+      return alert("กรุณากรอกข้อมูลและเลือกหน่วยงานให้ครบถ้วน");
+    }
+
+    // เปลี่ยนจาก dept: 'E&I' แบบฝังตายตัว เป็น dept: d ที่ผู้ใช้เลือกมา
+    await fetch(GAS_URL, { 
+      method: 'POST', 
+      body: JSON.stringify({ action: 'register', userId: uId, empId: e, name: n, dept: d }) 
+    });
+    
     location.reload();
   }
   window.onload = init;
